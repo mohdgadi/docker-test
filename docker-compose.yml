@@ -1,0 +1,38 @@
+version: '3.3'
+
+# Run as
+# docker-compose build; docker-compose up -d
+
+services:
+
+  mysql_db:
+    image: mysql:5.7
+    environment:   # Set up mysql database name and password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: todo
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+    - 3306:3306
+    networks:
+      - my-network
+
+  todo_app:
+    image: todo_app
+    container_name: todo_app
+    environment:   # Set up mysql database name and password
+      host: 0.0.0.0:3306 # Passing MySQL host
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql_db
+    ports:
+      - "8080:8080"
+    networks:
+      - my-network
+
+
+networks:
+  my-network:
+    driver: bridge
